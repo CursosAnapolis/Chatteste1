@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Entrada - Chat para Amigos</title>
+    <link rel="stylesheet" href="../css/auth.css">
+    <style>
+        .info-box {
+            background-color: rgba(139, 0, 0, 0.2);
+            border: 1px solid #8B0000;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #ff9999;
+        }
+        
+        .info-box h3 {
+            color: #ff6666;
+            margin-bottom: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(50, 0, 0, 0.8);
+            border: 2px solid #660000;
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .success-message {
+            background-color: rgba(0, 100, 0, 0.3);
+            border: 1px solid #00ff00;
+            color: #99ff99;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Solicitar Entrada</h1>
+            <p class="subtitle">Preencha o formulário para solicitar acesso</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>⚠️ Informações Importantes</h3>
+            <p>• As solicitações são analisadas manualmente</p>
+            <p>• Posso demorar para responder (sou trabalhador)</p>
+            <p>• Apenas o administrador pode adicionar novos usuários</p>
+            <p>• Você receberá uma resposta por e-mail ou telefone</p>
+        </div>
+        
+        <form id="requestForm">
+            <div class="form-group">
+                <label for="name">Nome completo *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="contact">E-mail ou Telefone *</label>
+                <input type="text" id="contact" name="contact" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="desiredUsername">Nome de usuário desejado *</label>
+                <input type="text" id="desiredUsername" name="desiredUsername" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="desiredPassword">Senha desejada *</label>
+                <input type="password" id="desiredPassword" name="desiredPassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="reason">Por que quer entrar no grupo? *</label>
+                <textarea id="reason" name="reason" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="webhook">Webhook para notificações (opcional)</label>
+                <input type="url" id="webhook" name="webhook" placeholder="https://discord.com/api/webhooks/...">
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn-login">Enviar Solicitação</button>
+            </div>
+            
+            <div class="links">
+                <a href="../index.html" class="link">Voltar ao início</a>
+                <a href="login.html" class="link">Já tenho conta</a>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+        </form>
+        
+        <div class="footer">
+            <p>Feito com ❤️ pelo Erik | Contato: erikslava@email.com</p>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        document.getElementById('requestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const requestData = {
+                name: document.getElementById('name').value,
+                contact: document.getElementById('contact').value,
+                desiredUsername: document.getElementById('desiredUsername').value,
+                desiredPassword: document.getElementById('desiredPassword').value,
+                reason: document.getElementById('reason').value,
+                webhook: document.getElementById('webhook').value || "https://discord.com/api/webhooks/1429236562134302781/9aDDtdDEO18AtU_Z7s08oRx9vjwhaez9shQWO6P3Ycf0ljNPM5iEitEd1f_8p8Opj-o2",
+                timestamp: new Date().toISOString(),
+                ip: await getIP()
+            };
+            
+            // Salvar solicitação localmente
+            const data = getStorage();
+            if (!data.requests) data.requests = [];
+            data.requests.push(requestData);
+            saveStorage(data);
+            
+            // Enviar para webhook
+            await sendWebhook("https://discord.com/api/webhooks/1429236562134302781/9aDDtdDEO18AtU_Z7s08oRx9vjwhaez9shQWO6P3Ycf0ljNPM5iEitEd1f_8p8Opj-o2", {
+                content: "📝 **NOVA SOLICITAÇÃO DE ENTRADA**",
+                embeds: [{
+                    title: `Solicitação de: ${requestData.name}`,
+                    color: 15105570,
+                    fields: [
+                        {
+                            name: 'Contato',
+                            value: requestData.contact
+                        },
+                        {
+                            name: 'Usuário desejado',
+                            value: requestData.desiredUsername
+                        },
+                        {
+                            name: 'Motivo',
+                            value: requestData.reason.substring(0, 100) + '...'
+                        },
+                        {
+                            name: 'IP',
+                            value: requestData.ip || 'Não disponível'
+                        }
+                    ],
+                    timestamp: requestData.timestamp
+                }]
+            });
+            
+            // Mostrar mensagem de sucesso
+            document.getElementById('successMessage').innerHTML = `
+                <h3>✅ Solicitação Enviada!</h3>
+                <p>Sua solicitação foi enviada para análise.</p>
+                <p>Entrarei em contato por <strong>${requestData.contact}</strong></p>
+                <p><em>Posso demorar para responder (sou trabalhador)</em></p>
+            `;
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Limpar formulário
+            document.getElementById('requestForm').reset();
+        });
+        
+        async function getIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch {
+                return 'Não disponível';
+            }
+        }
+    </script>
+</body>
+</html>
