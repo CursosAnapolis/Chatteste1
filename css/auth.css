@@ -1,0 +1,206 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0a0000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: 
+        linear-gradient(45deg, rgba(139, 0, 0, 0.1) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(139, 0, 0, 0.1) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(139, 0, 0, 0.1) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(139, 0, 0, 0.1) 75%);
+    background-size: 20px 20px;
+}
+
+.login-container {
+    background-color: rgba(20, 0, 0, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.3);
+    border: 2px solid #8B0000;
+    width: 90%;
+    max-width: 400px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: #ff0000;
+    font-size: 2.5em;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #ff6666;
+    font-size: 1em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #ff9999;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: rgba(50, 0, 0, 0.8);
+    border: 2px solid #660000;
+    border-radius: 8px;
+    color: white;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #8B0000, #FF0000);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background: linear-gradient(45deg, #FF0000, #8B0000);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+}
+
+.btn-login:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.link {
+    color: #ff6666;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: #ff0000;
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 1px solid #ff0000;
+    color: #ff6666;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    display: none;
+}
+
+.ban-message {
+    background-color: rgba(139, 0, 0, 0.3);
+    border: 2px solid #8B0000;
+    color: #ff9999;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+    display: none;
+}
+
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #ff6666;
+    font-size: 0.9em;
+    padding-top: 20px;
+    border-top: 1px solid rgba(139, 0, 0, 0.5);
+}
+
+/* Modal de verificação */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: rgba(30, 0, 0, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    border: 2px solid #8B0000;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.code-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+.code-inputs input {
+    width: 50px;
+    height: 60px;
+    text-align: center;
+    font-size: 1.5em;
+    background-color: rgba(50, 0, 0, 0.8);
+    border: 2px solid #660000;
+    border-radius: 8px;
+    color: white;
+}
+
+.code-inputs input:focus {
+    border-color: #ff0000;
+    outline: none;
+}
