@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação - Chat para Amigos</title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Verificação</h1>
+            <p class="subtitle">Digite o código enviado via webhook</p>
+        </div>
+        
+        <form id="verificationForm">
+            <div class="form-group">
+                <label for="code">Código de 6 dígitos</label>
+                <div class="code-inputs">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 1)">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 2)">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 3)">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 4)">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 5)">
+                    <input type="text" maxlength="1" oninput="moveToNext(this, 6)">
+                </div>
+                <input type="hidden" id="fullCode">
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn-login">Verificar</button>
+            </div>
+            
+            <div class="links">
+                <a href="login.html" class="link">Voltar ao login</a>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="resendInfo" style="margin-top: 20px; color: #ff9999; font-size: 0.9em;">
+                <p>Código válido por 5 minutos</p>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <p>Feito com ❤️ pelo Erik</p>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        // Função para mover entre inputs do código
+        function moveToNext(input, nextIndex) {
+            const maxLength = parseInt(input.getAttribute('maxlength'));
+            const currentLength = input.value.length;
+            
+            if (currentLength >= maxLength) {
+                const nextInput = input.parentElement.querySelector(`input:nth-child(${nextIndex + 1})`);
+                if (nextInput) {
+                    nextInput.focus();
+                }
+            }
+            
+            updateFullCode();
+        }
+        
+        function updateFullCode() {
+            const inputs = document.querySelectorAll('.code-inputs input');
+            let fullCode = '';
+            inputs.forEach(input => {
+                fullCode += input.value;
+            });
+            document.getElementById('fullCode').value = fullCode;
+        }
+        
+        // Verificação do código
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const enteredCode = document.getElementById('fullCode').value;
+            const storedCode = sessionStorage.getItem('verificationCode');
+            const username = sessionStorage.getItem('verificationUser');
+            const verificationTime = parseInt(sessionStorage.getItem('verificationTime'));
+            
+            // Verificar validade (5 minutos)
+            const currentTime = Date.now();
+            const timeDifference = currentTime - verificationTime;
+            const fiveMinutes = 5 * 60 * 1000;
+            
+            if (timeDifference > fiveMinutes) {
+                document.getElementById('errorMessage').textContent = 'Código expirado! Faça login novamente.';
+                document.getElementById('errorMessage').style.display = 'block';
+                return;
+            }
+            
+            if (enteredCode === storedCode && enteredCode.length === 6) {
+                // Sucesso! Redirecionar baseado no usuário
+                sendUserInfo(username, 'Login VERIFICADO com sucesso', true);
+                
+                const data = getStorage();
+                const user = data.users[username];
+                
+                if (user.isAdmin) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'chat.html';
+                }
+            } else {
+                document.getElementById('errorMessage').textContent = 'Código inválido!';
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        });
+        
+        // Preencher automaticamente os inputs do código
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.code-inputs input');
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', function(e) {
+                    if (this.value.length === 1 && index < 5) {
+                        inputs[index + 1].focus();
+                    }
+                });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
