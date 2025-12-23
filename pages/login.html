@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Chat para Amigos</title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="header">
+            <h1>Login</h1>
+            <p class="subtitle">Entre na sua conta</p>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Usuário</label>
+                <input type="text" id="username" name="username" required autocomplete="off">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-toggle" onclick="togglePassword()">👁️</div>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn-login">Entrar</button>
+            </div>
+            
+            <div class="links">
+                <a href="../index.html" class="link">Voltar</a>
+                <a href="request.html" class="link">Solicitar acesso</a>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            <div id="banMessage" class="ban-message"></div>
+        </form>
+        
+        <div class="footer">
+            <p>Feito com ❤️ pelo Erik</p>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script src="../js/utils.js"></script>
+</body>
+</html>
