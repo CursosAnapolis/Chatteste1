@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Geral - Chat para Amigos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0000;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(#8B0000 1px, transparent 1px),
+                radial-gradient(#8B0000 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+        }
+        
+        .header {
+            background-color: rgba(20, 0, 0, 0.95);
+            padding: 15px 20px;
+            border-bottom: 3px solid #8B0000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            color: #ff0000;
+            font-size: 1.5em;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            border: 2px solid #ff0000;
+        }
+        
+        .user-menu {
+            position: relative;
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            color: #ff9999;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: rgba(30, 0, 0, 0.98);
+            border: 2px solid #8B0000;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .menu-item {
+            padding: 15px;
+            color: #ff9999;
+            text-decoration: none;
+            display: block;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .chat-sidebar {
+            width: 300px;
+            background-color: rgba(15, 0, 0, 0.95);
+            border-right: 2px solid #8B0000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(10, 0, 0, 0.9);
+        }
+        
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 15px;
+            border-radius: 20px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.received {
+            align-self: flex-start;
+            background-color: rgba(50, 0, 0, 0.8);
+            border: 1px solid #660000;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .message-sender {
+            font-weight: bold;
+            color: #ffcccc;
+        }
+        
+        .message-time {
+            color: #ff9999;
+            font-size: 0.8em;
+        }
+        
+        .message-content {
+            word-wrap: break-word;
+        }
+        
+        .message-content img, .message-content video {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        
+        .message-content audio {
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .input-container {
+            padding: 20px;
+            background-color: rgba(20, 0, 0, 0.95);
+            border-top: 2px solid #8B0000;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 15px;
+            background-color: rgba(50, 0, 0, 0.8);
+            border: 2px solid #660000;
+            border-radius: 25px;
+            color: white;
+            font-size: 1em;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+        
+        .send-btn {
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+        
+        .attachment-btn {
+            background: rgba(50, 0, 0, 0.8);
+            border: 2px solid #660000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: #ff9999;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .attachment-btn:hover {
+            color: #ff0000;
+            border-color: #ff0000;
+        }
+        
+        .online-users {
+            margin-top: 20px;
+        }
+        
+        .online-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: rgba(50, 0, 0, 0.5);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .online-user:hover {
+            background-color: rgba(255, 0, 0, 0.2);
+        }
+        
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .settings-content {
+            background-color: rgba(30, 0, 0, 0.98);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid #8B0000;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #ff9999;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+        
+        .profile-preview {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            border: 3px solid #ff0000;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .file-input-label:hover {
+            background: linear-gradient(45deg, #FF0000, #8B0000);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <h1>💬 Chat para Amigos</h1>
+        </div>
+        
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">E</div>
+            <div class="user-menu">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="menu-item" onclick="openSettings()">⚙️ Configurações</a>
+                    <a href="#" class="menu-item" onclick="logout()">🚪 Sair</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <h3 style="color: #ff6666; margin-bottom: 20px;">👥 Online Agora</h3>
+            <div id="onlineUsers" class="online-users">
+                <!-- Usuários online serão carregados aqui -->
+            </div>
+        </div>
+        
+        <div class="chat-main">
+            <div id="messagesContainer" class="messages-container">
+                <!-- Mensagens serão carregadas aqui -->
+            </div>
+            
+            <div class="input-container">
+                <button class="attachment-btn" onclick="attachFile()">📎</button>
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="Digite sua mensagem..."
+                    onkeypress="handleKeyPress(event)"
+                ></textarea>
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+                <input type="file" id="fileInput" style="display: none;" multiple>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Configurações -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="modal-header">
+                <h2 style="color: #ff0000;">Configurações</h2>
+                <button class="close-modal" onclick="closeSettings()">×</button>
+            </div>
+            
+            <form id="settingsForm">
+                <div class="profile-preview">
+                    <div class="profile-avatar" id="profileAvatarPreview">
+                        <img id="avatarImage" src="" alt="" style="display: none;">
+                        <span id="avatarInitial">E</span>
+                    </div>
+                    <label class="file-input-label">
+                        📷 Alterar Foto
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                    </label>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 8px; color: #ff9999;">Nome de exibição</label>
+                    <input type="text" id="displayName" style="width: 100%; padding: 10px; background-color: rgba(50, 0, 0, 0.8); border: 2px solid #660000; border-radius: 5px; color: white;">
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 8px; color: #ff9999;">Webhook pessoal</label>
+                    <input type="url" id="personalWebhook" style="width: 100%; padding: 10px; background-color: rgba(50, 0, 0, 0.8); border: 2px solid #660000; border-radius: 5px; color: white;">
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <button type="button" class="btn-login" style="width: 100%;" onclick="saveSettings()">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script>
+        // Verificar se está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('verificationUser');
+            if (!username) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Carregar dados do usuário
+            loadUserData();
+            loadMessages();
+            updateOnlineUsers();
+            
+            // Atualizar a cada 5 segundos
+            setInterval(updateOnlineUsers, 5000);
+            setInterval(loadMessages, 3000);
+            
+            // Enviar mensagem de entrada
+            sendSystemMessage(`${username} entrou no chat`);
+        });
+        
+        function toggleMenu() {
+            document.getElementById('dropdownMenu').classList.toggle('show');
+        }
+        
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+            toggleMenu();
+        }
+        
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+        
+        function logout() {
+            const username = sessionStorage.getItem('verificationUser');
+            sendSystemMessage(`${username} saiu do chat`);
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+        
+        function loadUserData() {
+            const username = sessionStorage.getItem('verificationUser');
+            const data = getStorage();
+            const user = data.users[username];
+            
+            // Atualizar avatar
+            const avatar = localStorage.getItem(`${username}_avatar`) || '';
+            const avatarInitial = username.charAt(0).toUpperCase();
+            
+            document.getElementById('userAvatar').textContent = avatarInitial;
+            document.getElementById('avatarInitial').textContent = avatarInitial;
+            
+            if (avatar) {
+                document.getElementById('avatarImage').src = avatar;
+                document.getElementById('avatarImage').style.display = 'block';
+                document.getElementById('avatarInitial').style.display = 'none';
+                document.getElementById('userAvatar').innerHTML = `<img src="${avatar}" style="width:100%;height:100%;border-radius:50%;">`;
+            }
+            
+            // Preencher configurações
+            document.getElementById('displayName').value = localStorage.getItem(`${username}_displayName`) || username;
+            document.getElementById('personalWebhook').value = user.webhook;
+            
+            // Configurar upload de avatar
+            document.getElementById('avatarInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const avatarUrl = event.target.result;
+                        localStorage.setItem(`${username}_avatar`, avatarUrl);
+                        
+                        document.getElementById('avatarImage').src = avatarUrl;
+                        document.getElementById('avatarImage').style.display = 'block';
+                        document.getElementById('avatarInitial').style.display = 'none';
+                        document.getElementById('userAvatar').innerHTML = `<img src="${avatarUrl}" style="width:100%;height:100%;border-radius:50%;">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        function saveSettings() {
+            const username = sessionStorage.getItem('verificationUser');
+            const displayName = document.getElementById('displayName').value;
+            const webhook = document.getElementById('personalWebhook').value;
+            
+            localStorage.setItem(`${username}_displayName`, displayName);
+            
+            // Atualizar webhook no storage
+            const data = getStorage();
+            data.users[username].webhook = webhook;
+            saveStorage(data);
+            
+            closeSettings();
+            
+            // Notificar mudança
+            sendUserInfo(username, 'Configurações ATUALIZADAS', true);
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            const username = sessionStorage.getItem('verificationUser');
+            const displayName = localStorage.getItem(`${username}_displayName`) || username;
+            
+            if (!message) return;
+            
+            // Criar objeto de mensagem
+            const messageObj = {
+                id: Date.now(),
+                sender: username,
+                displayName: displayName,
+                content: message,
+                timestamp: new Date().toISOString(),
+                type: 'text'
+            };
+            
+            // Salvar mensagem
+            saveMessage(messageObj);
+            
+            // Enviar para webhook
+            sendWebhookMessage(messageObj);
+            
+            // Limpar input
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Scroll para baixo
+            scrollToBottom();
+        }
+        
+        function sendWebhookMessage(messageObj) {
+            const data = getStorage();
+            const user = data.users[messageObj.sender];
+            
+            sendWebhook(user.webhook, {
+                content: `💬 **NOVA MENSAGEM NO CHAT**`,
+                embeds: [{
+                    title: `${messageObj.displayName} diz:`,
+                    description: messageObj.content,
+                    color: 14427686,
+                    timestamp: messageObj.timestamp,
+                    footer: {
+                        text: 'Chat para Amigos'
+                    }
+                }]
+            });
+        }
+        
+        function sendSystemMessage(content) {
+            const messageObj = {
+                id: Date.now(),
+                sender: 'system',
+                displayName: 'Sistema',
+                content: content,
+                timestamp: new Date().toISOString(),
+                type: 'system'
+            };
+            
+            saveMessage(messageObj);
+        }
+        
+        function saveMessage(messageObj) {
+            const messages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+            messages.push(messageObj);
+            localStorage.setItem('chat_messages', JSON.stringify(messages.slice(-100))); // Manter últimas 100
+        }
+        
+        function loadMessages() {
+            const messages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+            const container = document.getElementById('messagesContainer');
+            const currentUser = sessionStorage.getItem('verificationUser');
+            
+            // Limpar apenas se houver novas mensagens
+            const currentCount = container.children.length;
+            if (currentCount === messages.length) return;
+            
+            container.innerHTML = '';
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender === currentUser ? 'sent' : 'received'} ${msg.sender === 'system' ? 'system' : ''}`;
+                
+                if (msg.sender === 'system') {
+                    messageDiv.style.cssText = `
+                        align-self: center;
+                        background: rgba(139, 0, 0, 0.3);
+                        border: 1px solid #8B0000;
+                        border-radius: 10px;
+                        max-width: 90%;
+                        text-align: center;
+                        color: #ff9999;
+                        font-style: italic;
+                    `;
+                    messageDiv.innerHTML = `
+                        <div class="message-content">${msg.content}</div>
+                        <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="message-header">
+                            <span class="message-sender">${msg.displayName}</span>
+                            <span class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div class="message-content">${formatMessageContent(msg.content)}</div>
+                    `;
+                }
+                
+                container.appendChild(messageDiv);
+            });
+            
+            scrollToBottom();
+        }
+        
+        function formatMessageContent(content) {
+            // URL detection
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return content.replace(urlRegex, url => {
+                if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
+                    return `<img src="${url}" alt="Imagem" onclick="this.classList.toggle('expanded')" style="cursor: pointer; max-height: 300px;">`;
+                } else if (url.match(/\.(mp4|webm|ogg)$/)) {
+                    return `<video controls src="${url}" style="max-height: 300px;"></video>`;
+                } else if (url.match(/\.(mp3|wav|ogg)$/)) {
+                    return `<audio controls src="${url}"></audio>`;
+                } else {
+                    return `<a href="${url}" target="_blank" style="color: #ffcccc;">${url}</a>`;
+                }
+            });
+        }
+        
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+            
+            // Auto-resize textarea
+            const textarea = e.target;
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+        
+        function attachFile() {
+            document.getElementById('fileInput').click();
+        }
+        
+        function updateOnlineUsers() {
+            const container = document.getElementById('onlineUsers');
+            const username = sessionStorage.getItem('verificationUser');
+            const data = getStorage();
+            
+            container.innerHTML = '';
+            
+            // Adicionar usuário atual
+            addUserToOnlineList(username, true);
+            
+            // Simular outros usuários online (em um sistema real, isso viria de um servidor)
+            Object.keys(data.users).forEach(user => {
+                if (user !== username && Math.random() > 0.3) { // 70% de chance de estar "online"
+                    addUserToOnlineList(user, false);
+                }
+            });
+        }
+        
+        function addUserToOnlineList(username, isCurrentUser) {
+            const container = document.getElementById('onlineUsers');
+            const displayName = localStorage.getItem(`${username}_displayName`) || username;
+            const avatar = localStorage.getItem(`${username}_avatar`);
+            
+            const userDiv = document.createElement('div');
+            userDiv.className = 'online-user';
+            
+            let avatarContent = username.charAt(0).toUpperCase();
+            if (avatar) {
+                avatarContent = `<img src="${avatar}" style="width:100%;height:100%;border-radius:50%;">`;
+            }
+            
+            userDiv.innerHTML = `
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #8B0000, #FF0000); display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #ff0000;">
+                    ${avatarContent}
+                </div>
+                <div>
+                    <strong style="color: ${isCurrentUser ? '#ff0000' : '#ffcccc'}">${displayName}</strong>
+                    <div style="font-size: 0.8em; color: #ff9999;">${username}</div>
+                </div>
+                <div class="online-dot"></div>
+            `;
+            
+            container.appendChild(userDiv);
+        }
+        
+        // Fechar menu ao clicar fora
+        window.addEventListener('click', function(e) {
+            if (!e.target.matches('.menu-btn')) {
+                const dropdown = document.getElementById('dropdownMenu');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    </script>
+</body>
+  </html>
