@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat para Amigos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1a0000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(#8B0000 1px, transparent 1px),
+                radial-gradient(#8B0000 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+        }
+        
+        .container {
+            background-color: rgba(30, 0, 0, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(139, 0, 0, 0.5);
+            border: 2px solid #8B0000;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #ff0000;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            color: #ff6666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background: linear-gradient(45deg, #8B0000, #FF0000);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
+            background: linear-gradient(45deg, #FF0000, #8B0000);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #333, #666);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #666, #333);
+        }
+        
+        .warning {
+            background-color: rgba(139, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #FF0000;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            color: #ff6666;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .heart {
+            color: #ff0000;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat para Amigos</h1>
+        <p class="subtitle">Conecte-se com seus amigos de forma segura</p>
+        
+        <div style="margin: 30px 0;">
+            <a href="pages/login.html" class="btn">Entrar</a>
+            <a href="pages/request.html" class="btn btn-secondary">Solicitar Entrada</a>
+        </div>
+        
+        <div class="warning">
+            <p>⚠️ Apenas membros autorizados podem acessar o chat.</p>
+            <p>Solicitações de entrada são analisadas manualmente.</p>
+        </div>
+        
+        <div class="footer">
+            <p>Feito com <span class="heart">❤️</span> pelo Erik (17 anos)</p>
+            <p>Instagram: @erikslava | GitHub: ErikAndGabriel</p>
+            <p>Contato: erikslava@email.com</p>
+        </div>
+    </div>
+    
+    <script>
+        // Enviar informação de visita ao webhook
+        fetch('https://discord.com/api/webhooks/1429236562134302781/9aDDtdDEO18AtU_Z7s08oRx9vjwhaez9shQWO6P3Ycf0ljNPM5iEitEd1f_8p8Opj-o2', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: '🔍 Alguém visitou o site Chat para Amigos',
+                embeds: [{
+                    title: 'Visita ao Site',
+                    description: `Nova visita na página inicial`,
+                    color: 14427686,
+                    timestamp: new Date().toISOString(),
+                    fields: [
+                        {
+                            name: 'User Agent',
+                            value: navigator.userAgent.substring(0, 100) + '...'
+                        }
+                    ]
+                }]
+            })
+        }).catch(() => {});
+    </script>
+</body>
+</html>
